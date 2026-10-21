@@ -7,7 +7,7 @@
 <meta name="description" content="Envie sugestões de pautas para a Assessoria de Comunicação da Associação Norte do Pará.">
 <style>
 @font-face{font-family:"AdventSansLogo";src:url("AdventSans-Logo.ttf") format("truetype");font-display:swap}
-:root{--blue:#0B3764;--navy:#1D2A4D;--brick:#A03B2E;--paper:#F2ECDF;--card:#FFFDF8;--line:#DDD3BD;--muted:#4A5262;--sand:#E9D9B0}
+:root{--blue:#0B3764;--navy:#1D2A4D;--brick:#A03B2E;--paper:#F2ECDF;--card:#FFFDF8;--line:#DDD3BD;--muted:#4A5262}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--blue);color:var(--navy);font-family:"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
@@ -27,13 +27,28 @@ p{margin:0 0 12px}
 .card b{display:block;color:var(--blue);font-size:18px;margin-bottom:4px}
 .num{font-family:"AdventSansLogo",Georgia,serif;color:var(--brick);font-size:36px;line-height:1}
 .notice{background:#fff;border-left:5px solid var(--brick);border-radius:8px;padding:14px 18px;margin-top:18px}
-.cta{display:inline-block;margin-top:8px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px}
+.cta{display:inline-block;margin-top:8px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px;border:0;font-size:17px;cursor:pointer;font-family:inherit}
 .cta:hover{background:var(--navy)}
+.cta[disabled]{opacity:.6;cursor:wait}
 .center{text-align:center}
-.formbox{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px}
-.formbox iframe{display:block;width:100%;height:3600px;border:0}
-.alt{font-size:15px;color:var(--muted);text-align:center;margin-top:12px}
-.alt a{color:var(--blue);font-weight:600}
+/* formulário */
+.fgroup{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.fgroup h4{margin:0 0 14px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--brick)}
+label.l{display:block;font-weight:600;margin:0 0 4px;font-size:15px}
+.req{color:var(--brick)}
+input[type=text],input[type=tel],input[type=date],select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid #C9BFA8;border-radius:10px;background:#fff;color:var(--navy);margin-bottom:14px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(11,55,100,.25);border-color:var(--blue)}
+.row2{display:grid;gap:0 14px;grid-template-columns:1fr 1fr}
+@media(max-width:640px){.row2{grid-template-columns:1fr}.paper{padding:28px 18px}}
+.choices{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.choices label{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #C9BFA8;border-radius:999px;padding:9px 16px;cursor:pointer;font-size:16px}
+.choices input{accent-color:var(--blue);width:18px;height:18px}
+.err{background:#FDECEA;border-left:5px solid var(--brick);border-radius:8px;padding:12px 16px;margin:0 0 16px;display:none}
+.ok{display:none;text-align:center;padding:10px 0}
+.ok .big{font-family:"AdventSansLogo",Georgia,serif;color:var(--blue);font-size:clamp(30px,6vw,44px);line-height:1.1;margin:0 0 10px}
+.btn2{display:inline-block;margin:6px;background:#1F8F4E;color:#fff;text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px}
+.btn3{display:inline-block;margin:6px;background:transparent;color:var(--blue);border:2px solid var(--blue);text-decoration:none;font-weight:700;padding:11px 22px;border-radius:999px;cursor:pointer;font-family:inherit;font-size:16px}
 .foot{color:#C9D6E6;text-align:center;font-size:14px;margin-top:20px}
 </style>
 </head>
@@ -61,7 +76,7 @@ p{margin:0 0 12px}
 <section>
 <h3>Como funciona</h3>
 <div class="steps">
-<div class="card"><span class="num">1</span><b>Você envia</b>Preencha o formulário com a história. Só o título é obrigatório.</div>
+<div class="card"><span class="num">1</span><b>Você envia</b>Preencha o formulário com a história.</div>
 <div class="card"><span class="num">2</span><b>A Assessoria avalia</b>Analisamos a história, o material e o melhor destino.</div>
 <div class="card"><span class="num">3</span><b>Publicamos</b>Se aprovada, a pauta é escrita e publicada.</div>
 </div>
@@ -84,15 +99,159 @@ p{margin:0 0 12px}
 <section id="formulario">
 <h3>Formulário</h3>
 <h2>Envie sua pauta</h2>
-<p>Informe um telefone em que você seja encontrado, para a Assessoria falar com você se precisar.</p>
-<div class="formbox">
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScI9UR2sGxzza1jzJoYhj78s4g9q4asPsBFljYk5tiGUWc_Ug/viewform?embedded=true" title="Formulário do Banco de Pautas" loading="lazy">Carregando…</iframe>
+<p>Campos com <span class="req">*</span> são obrigatórios.</p>
+
+<form id="pautaForm" novalidate>
+<div class="err" id="err"></div>
+
+<div class="fgroup">
+<h4>Identificação</h4>
+<label class="l" for="nome">Nome <span class="req">*</span></label>
+<input type="text" id="nome" autocomplete="name">
+<div class="row2">
+<div><label class="l" for="igreja">Igreja / Distrito <span class="req">*</span></label>
+<input type="text" id="igreja"></div>
+<div><label class="l" for="tel">Telefone (WhatsApp) <span class="req">*</span></label>
+<input type="tel" id="tel" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000"></div>
 </div>
-<p class="alt">Está com dificuldade? <a href="https://docs.google.com/forms/d/e/1FAIpQLScI9UR2sGxzza1jzJoYhj78s4g9q4asPsBFljYk5tiGUWc_Ug/viewform" target="_blank" rel="noopener">Abra o formulário em tela cheia</a>.</p>
+</div>
+
+<div class="fgroup">
+<h4>A pauta</h4>
+<label class="l" for="titulo">Título da pauta <span class="req">*</span></label>
+<input type="text" id="titulo" placeholder="Ex.: Feira de Saúde em Castanhal">
+<div class="row2">
+<div><label class="l" for="categoria">Categoria (departamento) <span class="req">*</span></label>
+<select id="categoria"><option value="">Selecione…</option></select></div>
+<div><label class="l" for="data">Data da ação <span class="req">*</span></label>
+<input type="date" id="data"></div>
+</div>
+</div>
+
+<div class="fgroup">
+<h4>Quem, o quê, onde e como</h4>
+<label class="l" for="quem">Quem esteve envolvido? <span class="req">*</span></label>
+<textarea id="quem" placeholder="Igreja, líderes, ministério, parceiros"></textarea>
+<label class="l" for="oque">O que foi feito? <span class="req">*</span></label>
+<textarea id="oque"></textarea>
+<div class="row2">
+<div><label class="l" for="onde">Onde? <span class="req">*</span></label>
+<input type="text" id="onde" placeholder="Cidade, bairro ou local"></div>
+<div><label class="l" for="numeros">Números <span class="req">*</span></label>
+<input type="text" id="numeros" placeholder="Participantes, atendidos, doações"></div>
+</div>
+<label class="l" for="como">Como aconteceu e por quê? <span class="req">*</span></label>
+<textarea id="como"></textarea>
+</div>
+
+<div class="fgroup">
+<h4>Material disponível</h4>
+<label class="l">Há depoimentos? <span class="req">*</span></label>
+<div class="choices">
+<label><input type="radio" name="depo" value="Sim"> Sim</label>
+<label><input type="radio" name="depo" value="Não"> Não</label>
+</div>
+<label class="l">Há fotos ou vídeos? <span class="req">*</span></label>
+<div class="choices">
+<label><input type="radio" name="midia" value="Sim"> Sim</label>
+<label><input type="radio" name="midia" value="Não"> Não</label>
+</div>
+</div>
+
+<div class="fgroup">
+<h4>Destino sugerido</h4>
+<label class="l">Para onde você acha que a pauta deve ir? <span class="req">*</span></label>
+<div class="choices" id="destinoBox"></div>
+<label class="l" for="obs">Observações</label>
+<textarea id="obs" placeholder="Qualquer informação adicional"></textarea>
+</div>
+
+<div class="center">
+<button type="submit" class="cta" id="btnEnviar">Enviar pauta</button>
+</div>
+</form>
+
+<div class="ok" id="ok">
+<p class="big">Pauta enviada. Obrigado!</p>
+<p>A Assessoria vai avaliar a sua sugestão e, se precisar, falará com você pelo telefone informado.</p>
+<a class="btn2" id="wapp" target="_blank" rel="noopener">Avisar no WhatsApp</a>
+<button type="button" class="btn3" id="outra">Enviar outra pauta</button>
+</div>
 </section>
 
 </div>
 <p class="foot">Associação Norte do Pará · Igreja Adventista do Sétimo Dia</p>
 </div>
+
+<script>
+/* ===== CONFIGURAÇÃO — liga a página ao seu Google Forms ===== */
+var FORM_ID = "1FAIpQLScI9UR2sGxzza1jzJoYhj78s4g9q4asPsBFljYk5tiGUWc_Ug";
+var WHATSAPP = "5544998253859";
+var E = {
+  nome:"entry.1692136629", igreja:"entry.1928953296", tel:"entry.317594710",
+  titulo:"entry.94472417", categoria:"entry.1704259175", data:"entry.294456602",
+  quem:"entry.1538578331", oque:"entry.374825042", onde:"entry.52554952",
+  numeros:"entry.1997422050", como:"entry.704627174",
+  depo:"entry.468519663", midia:"entry.1513767559", destino:"entry.1157008460"
+};
+var CATEGORIAS = ["Ansionato","ASA","Aventureiros","Comunicação","Desbravadores","Diaconato","Educação","Escola Sabatina","Escola Bíblica Novo Tempo","Evangelismo","Ministério da Criança","Ministério da Mulher","Ministério da Saúde","MAP","Ministério de Publicações","Ministério do Adolescente","Ministério Jovem","Ministério Pessoal","Mordomia Cristã","Universitários","Secretaria","Ministério da Família","Liberdade Religiosa","Ministério da Música"];
+/* texto na tela  →  texto EXATO da opção no Google Forms */
+var DESTINOS = [
+  {label:"Portal de Notícias (ASN)", valor:"Postal de Notícias (ASN)"},
+  {label:"Revista Novo Tempo", valor:"Revista Novo Tempo"},
+  {label:"Assessoria de Imprensa (Mídia externa)", valor:"Assessoria de Imprensa (Mídia externa)"}
+];
+/* ============================================================ */
+
+var $ = function(id){return document.getElementById(id)};
+CATEGORIAS.forEach(function(c){var o=document.createElement("option");o.value=c;o.textContent=c;$("categoria").appendChild(o)});
+DESTINOS.forEach(function(d,i){
+  var l=document.createElement("label");
+  l.innerHTML='<input type="radio" name="destino" value="'+i+'"> '+d.label;
+  $("destinoBox").appendChild(l);
+});
+function radio(n){var r=document.querySelector('input[name="'+n+'"]:checked');return r?r.value:""}
+function showErr(m){var e=$("err");e.textContent=m;e.style.display="block";e.scrollIntoView({behavior:"smooth",block:"center"})}
+
+$("pautaForm").addEventListener("submit",function(ev){
+  ev.preventDefault();
+  $("err").style.display="none";
+  var v={nome:$("nome").value.trim(),igreja:$("igreja").value.trim(),tel:$("tel").value.trim(),
+    titulo:$("titulo").value.trim(),categoria:$("categoria").value,data:$("data").value,
+    quem:$("quem").value.trim(),oque:$("oque").value.trim(),onde:$("onde").value.trim(),
+    numeros:$("numeros").value.trim(),como:$("como").value.trim(),
+    depo:radio("depo"),midia:radio("midia"),destino:radio("destino"),obs:$("obs").value.trim()};
+  var falta=[];
+  [["nome","Nome"],["igreja","Igreja / Distrito"],["tel","Telefone"],["titulo","Título da pauta"],["categoria","Categoria"],["data","Data da ação"],["quem","Quem esteve envolvido"],["oque","O que foi feito"],["onde","Onde"],["numeros","Números"],["como","Como aconteceu e por quê"],["depo","Há depoimentos?"],["midia","Há fotos ou vídeos?"],["destino","Destino sugerido"]].forEach(function(c){if(!v[c[0]])falta.push(c[1])});
+  if(falta.length){showErr("Preencha os campos obrigatórios: "+falta.join(", ")+".");return}
+
+  var p=new URLSearchParams();
+  p.append(E.nome,v.nome);p.append(E.igreja,v.igreja);p.append(E.tel,v.tel);
+  p.append(E.titulo,v.titulo);p.append(E.categoria,v.categoria);
+  var d=v.data.split("-");
+  p.append(E.data,v.data);
+  p.append(E.data+"_year",d[0]);p.append(E.data+"_month",String(parseInt(d[1],10)));p.append(E.data+"_day",String(parseInt(d[2],10)));
+  p.append(E.quem,v.quem);p.append(E.oque,v.oque);p.append(E.onde,v.onde);p.append(E.numeros,v.numeros);
+  /* o Forms não tem campo próprio de observações aqui: elas seguem junto com "Como aconteceu e por quê" */
+  p.append(E.como,v.obs?v.como+"\n\nObservações: "+v.obs:v.como);
+  p.append(E.depo,v.depo);p.append(E.midia,v.midia);
+  p.append(E.destino,DESTINOS[parseInt(v.destino,10)].valor);
+
+  var b=$("btnEnviar");b.disabled=true;b.textContent="Enviando…";
+  fetch("https://docs.google.com/forms/d/e/"+FORM_ID+"/formResponse",{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:p.toString()})
+  .then(function(){
+    var msg="Olá! Acabei de enviar uma pauta pelo Banco de Pautas.\nTítulo: "+v.titulo+"\nEnviado por: "+v.nome+" ("+v.igreja+")";
+    $("wapp").href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
+    $("pautaForm").style.display="none";$("ok").style.display="block";
+    $("ok").scrollIntoView({behavior:"smooth",block:"center"});
+  })
+  .catch(function(){b.disabled=false;b.textContent="Enviar pauta";showErr("Não foi possível enviar agora. Verifique a internet e tente de novo.")});
+});
+$("outra").addEventListener("click",function(){
+  $("pautaForm").reset();$("pautaForm").style.display="block";$("ok").style.display="none";
+  $("btnEnviar").disabled=false;$("btnEnviar").textContent="Enviar pauta";
+  $("formulario").scrollIntoView({behavior:"smooth"});
+});
+</script>
 </body>
 </html>
